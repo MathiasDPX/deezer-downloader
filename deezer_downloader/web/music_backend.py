@@ -81,10 +81,9 @@ def download_song_and_get_absolute_filename(search_type, song, playlist_name=Non
 
     file_extension = get_file_extension()
     if search_type == TYPE_ALBUM:
-        song_filename = "{:02d} - {} {}.{}".format(int(song['TRACK_NUMBER']),
-                                                   song['ART_NAME'],
-                                                   song['SNG_TITLE'],
-                                                   file_extension)
+        song_filename = "{:02d} - {}.{}".format(int(song['TRACK_NUMBER']),
+                                                song['SNG_TITLE'],
+                                                file_extension)
     else:
         song_filename = "{} - {}.{}".format(song['ART_NAME'],
                                             song['SNG_TITLE'],
@@ -94,11 +93,11 @@ def download_song_and_get_absolute_filename(search_type, song, playlist_name=Non
     if search_type == TYPE_TRACK:
         absolute_filename = os.path.join(config["download_dirs"]["songs"], song_filename)
     elif search_type == TYPE_ALBUM:
-        album_name = "{} - {}".format(song.get('ALB_ART_NAME', song.get('ART_NAME', None)), song['ALB_TITLE'])
-        album_name = clean_filename(album_name)
-        album_dir = os.path.join(config["download_dirs"]["albums"], album_name)
+        artist_name = clean_filename(song.get('ALB_ART_NAME', song.get('ART_NAME', None)))
+        album_title = clean_filename(song['ALB_TITLE'])
+        album_dir = os.path.join(config["download_dirs"]["albums"], artist_name, album_title)
         if not os.path.exists(album_dir):
-            os.mkdir(album_dir)
+            os.makedirs(album_dir)
         absolute_filename = os.path.join(album_dir, song_filename)
     elif search_type == TYPE_PLAYLIST:
         assert type(playlist_name) is str
@@ -117,15 +116,27 @@ def download_song_and_get_absolute_filename(search_type, song, playlist_name=Non
 
 
 def create_zip_file(songs_absolute_location):
-    # take first song in list and take the parent dir (name of album/playlist")
-    parent_dir = basename(os.path.dirname(songs_absolute_location[0]))
-    location_zip_file = os.path.join(config["download_dirs"]["zips"], "{}.zip".format(parent_dir))
+    # take first song in list and take the parent dir (name of album/playlist)
+    parent_dir_full = os.path.dirname(songs_absolute_location[0])
+    # compute the relative path from the base download directory
+    # (handles nested structures like artist/album for albums)
+    relative_dir = basename(parent_dir_full)
+    for base_dir in [config["download_dirs"]["albums"], config["download_dirs"]["playlists"]]:
+        try:
+            if os.path.commonpath([base_dir, parent_dir_full]) == base_dir:
+                relative_dir = os.path.relpath(parent_dir_full, base_dir)
+                break
+        except ValueError:
+            pass
+    # zip filenames can't contain "/" so use " - " as separator
+    zip_name = relative_dir.replace(os.sep, " - ")
+    location_zip_file = os.path.join(config["download_dirs"]["zips"], "{}.zip".format(zip_name))
     print("Creating zip file '{}'".format(location_zip_file))
     with ZipFile(location_zip_file, 'w', compression=ZIP_DEFLATED) as zip:
         for song_location in songs_absolute_location:
             try:
                 print("Adding song {}".format(song_location))
-                zip.write(song_location, arcname=os.path.join(parent_dir, basename(song_location)))
+                zip.write(song_location, arcname=os.path.join(relative_dir, basename(song_location)))
             except FileNotFoundError:
                 print("Could not find file '{}'".format(song_location))
     print("Done with the zip")
