@@ -140,7 +140,7 @@ class TestDeezerMethods(unittest.TestCase):
         self.assertEqual(songs[13]["SNG_TITLE"], "Aerials")
         self.assertEqual(songs[14]["SNG_ID"], "15523803")
         self.assertEqual(songs[14]["ART_NAME"], "System of A Down")
-        self.assertEqual(songs[14]["SNG_TITLE"], "Arto")
+        self.assertEqual(songs[14]["SNG_TITLE"], "Der Voghormia")
 
     def test_get_invalid_track_infos_from_website(self):
         with self.assertRaises(Deezer404Exception):
@@ -203,7 +203,7 @@ class TestDeezerMethods(unittest.TestCase):
             get_deezer_favorites(user_id)
 
     def test_get_deezer_favorites_userid_valid(self):
-        user_id = "2517244282" # own of test (works)
+        user_id = "6444163141" # own of test (works)
         songs = get_deezer_favorites(user_id)
         self.assertIsInstance(songs, list)
         for song in songs:
