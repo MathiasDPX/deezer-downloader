@@ -36,7 +36,7 @@ class TestDeezerMethods(unittest.TestCase):
         songs = deezer_search("Großstadtgeflüster diadem", TYPE_TRACK)
         self.assertIsInstance(songs, list)
         s = songs[0]
-        self.assertSetEqual(set(s.keys()), {'preview_url', 'artist', 'id', 'id_type', 'album_id', 'title', 'img_url', 'album'})
+        self.assertSetEqual(set(s.keys()), {'preview_url', 'artist', 'id', 'id_type', 'album_id', 'title', 'img_url', 'album', 'explicit_lyrics'})
         self.assertTrue(s['id'], '730393272')
         self.assertTrue(s['title'], 'Diadem')
         self.assertTrue(s['artist'], 'Grossstadtgeflüster')
@@ -44,12 +44,13 @@ class TestDeezerMethods(unittest.TestCase):
         self.assertTrue(s['preview_url'], 'https://cdns-preview-6.dzcdn.net/stream/c-6abdd540dd7e7f02d2c4d21537709c23-3.mp3')
         self.assertTrue(s['album_id'], '107261872')
         self.assertTrue(s['id_type'], 'track')
+        self.assertTrue(s['explicit_lyrics'])
 
     def test_deezer_search_album_valid(self):
         albums = deezer_search("Coldplay", TYPE_ALBUM)
         self.assertIsInstance(albums, list)
         for album in albums:
-            self.assertSetEqual(set(album.keys()), {'id', 'id_type', 'album', 'album_id', 'img_url', 'artist', 'title', 'preview_url'})
+            self.assertSetEqual(set(album.keys()), {'id', 'id_type', 'album', 'album_id', 'img_url', 'artist', 'title', 'preview_url', 'explicit_lyrics'})
 
         found_album_names = [x['album'] for x in albums]
         known_album_names = ['Parachutes', 'X&Y', 'A Head Full of Dreams']

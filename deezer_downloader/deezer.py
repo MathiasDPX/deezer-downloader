@@ -386,6 +386,7 @@ def deezer_search(search, search_type):
             i['id_type'] = TYPE_ALBUM
             i['album'] = item['title']
             i['album_id'] = item['id']
+            i['explicit_lyrics'] = item['explicit_lyrics']
             i['img_url'] = item['cover_small']
             i['title'] = ''
             i['preview_url'] = ''
@@ -400,6 +401,7 @@ def deezer_search(search, search_type):
             i['album'] = item['album']['title']
             i['album_id'] = item['album']['id']
             i['artist'] = item['artist']['name']
+            i['explicit_lyrics'] = item['explicit_lyrics']
             i['preview_url'] = item['preview']
         elif search_type == TYPE_ARTIST:
             i['id_type'] = TYPE_ARTIST

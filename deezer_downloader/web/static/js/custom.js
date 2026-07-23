@@ -109,6 +109,10 @@ $(document).ready(function() {
         $("#results").append(row); 
         var button_col = $("<td style='text-align: end'>");
 
+        if (rowData['explicit_lyrics'] === true) {
+            button_col.append($('<label class="btn btn-default" title="Explicit lyrics" style="top: 2px;position: relative;"><b>E</b></label>'));
+        }
+
         if (mtype === "track" || mtype === "album_track" || mtype === "artist_top") {
             $("#col-title").show();
             $("#col-album").show();
@@ -120,6 +124,7 @@ $(document).ready(function() {
             } else {
                 $("#col-cover").hide();
             }
+
             row.append($("<td>" + rowData.artist + "</td>"));
             row.append($("<td>" + rowData.title + "</td>"));
             row.append($("<td>" + rowData.album + "</td>"));
